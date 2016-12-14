@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <bean id="ui" class="us.martink.UI.GUI.GUIFactory"/>
+    <!--<bean id="consoleUI" class="us.martink.UI.ConsoleUI.ConsoleFactory"/>-->
+
+    <bean id="domain" class="us.martink.Domain.AmericanGov.AmericanGovernment"/>
+    <!--<bean id="russianGov" class="us.martink.Domain.RussianGov.RussianGovernment"/>-->
+
+    <bean id="presidentRep" class="us.martink.Domain.DomainAbstraction.President.PresidentRepository"/>
+    <bean id="agentRep" class="us.martink.Domain.DomainAbstraction.Agent.AgentRepository"/>
+
+    <bean id="commandProc" class="us.martink.Command.CommandAbstraction.CommandProcessor"/>
+    <bean id="controller" class="us.martink.UI.GUI.GUIController"/>
+
+    <bean id="presidentViewObserver" class="us.martink.UI.GUI.GUIPresidentView"/>
+    <bean id="presidentDialogObserver" class="us.martink.UI.GUI.GUIPresidentIdDialog"/>
+    <bean id="presidentNewsObserver" class="us.martink.UI.GUI.GUINewsView"/>
+
+    <bean id="commands" class="java.util.ArrayList">
+        <constructor-arg>
+            <list>
+                <ref bean="createPresident"/>
+                <ref bean="endangerPresident"/>
+                <ref bean="hireAgentForPresident"/>
+                <ref bean="checkPresidents"/>
+                <ref bean="undoLastCommand"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="createPresident" class="us.martink.Command.CommandConcrete.CreateNewPresident">
+        <constructor-arg ref="domain"/>
+        <constructor-arg value="Donald"/>
+        <constructor-arg value="Trump"/>
+        <constructor-arg ref="presidentViewObserver"/>
+        <constructor-arg ref="presidentRep"/>
+    </bean>
+
+    <bean id="endangerPresident" class="us.martink.Command.CommandConcrete.EndangerPresident">
+        <constructor-arg ref="presidentDialogObserver"/>
+        <constructor-arg ref="presidentRep"/>
+    </bean>
+
+    <bean id="hireAgentForPresident" class="us.martink.Command.CommandConcrete.HireAgentForPresident">
+        <constructor-arg ref="presidentDialogObserver"/>
+        <constructor-arg ref="domain"/>
+        <constructor-arg ref="presidentRep"/>
+        <constructor-arg ref="agentRep"/>
+    </bean>
+
+    <bean id="checkPresidents" class="us.martink.Command.CommandConcrete.CheckPresidents">
+        <constructor-arg ref="presidentNewsObserver"/>
+        <constructor-arg ref="presidentRep"/>
+    </bean>
+
+    <bean id="undoLastCommand" class="us.martink.Command.CommandConcrete.UndoLastCommand">
+        <constructor-arg ref="commandProc"/>
+    </bean>
+
+</beans>
